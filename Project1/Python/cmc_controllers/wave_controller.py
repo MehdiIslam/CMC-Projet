@@ -60,8 +60,9 @@ class WaveNetwork(NeuralNetwork):
         act_right = 0
 
         #pylog.warning("TODO:1.1 Use self.freq, self.amp, self.twl and self.n_body_joints to implement a wave controller")
-        time = iteration * timestep
-        m_diff = self.amp * np.sin(2 * np.pi * (self.freq * time - self.twl * (iteration/self.n_body_joints)))
+        i = np.arange(self.n_body_joints)
+
+        m_diff = self.amp * np.sin(2 * np.pi * (self.freq * time - self.twl * (i/self.n_body_joints)))
         act_left = (2 + m_diff)/2
         act_right = 2 - act_left
 
