@@ -120,7 +120,8 @@ def get_phase_lag(
     n_lag = np.argmax(xcorr) - len(xcorr) // 2
 
     phase_lag = 0
-    pylog.warning("TODO: 1.2")
+    #pylog.warning("TODO: 1.2")
+    phase_lag = 2 * np.pi * sig_freq * n_lag
     return phase_lag
 
 
@@ -253,6 +254,7 @@ def compute_mechanical_speed(links_positions: np.ndarray,
 
         pylog.warning("TODO: 1.2 Compute the forward and lateral speed of CoM with")
         # projections on PCA direction
+        print(links_positions.shape)
 
     return np.mean(speed_forward), np.mean(speed_lateral)
 
