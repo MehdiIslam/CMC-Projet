@@ -55,9 +55,12 @@ class WaveNetwork(NeuralNetwork):
         calling the physics.
 
         """
-
-        act_left = 0
-        act_right = 0
+        i = np.arange(self.n_body_joints)
+        
+        m_diff = self.amp * np.sin(2 * np.pi * (self.freq * time - self.twl * i / self.n_body_joints))
+        
+        act_left = 1.0 + (m_diff / 2.0)
+        act_right = 1.0 - (m_diff / 2.0)
 
         pylog.warning("TODO:1.1 Use self.freq, self.amp, self.twl and self.n_body_joints to implement a wave controller")
 
