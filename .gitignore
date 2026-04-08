@@ -1,0 +1,21 @@
+# Environnement Python
+venv/
+.env/
+.venv/
+
+# Conda
+env/
+envs/
+conda-env/
+
+# Python
+__pycache__/
+*.pyc
+
+# Mac
+.DS_Store
+
+# env
+cmc2026/
+cmc_env/
+venv_cmc/
