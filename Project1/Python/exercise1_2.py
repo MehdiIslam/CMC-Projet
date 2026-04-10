@@ -109,22 +109,75 @@ def exercise1_2(**kwargs):
 
     example_twl_range = np.linspace(0.2, 1.2, 3)
     example_amp_range = np.linspace(1.0, 3.0, 3)
-
     parameter_grid_example = {
         'twl': example_twl_range,
         'amp': example_amp_range,
     }
-
-    run_multiple(
-        max_workers=MAX_WORKERS,
-        controller=base_controller,
-        base_path=BASE_PATH,
-        parameter_grid=parameter_grid_example,
-        common_kwargs={'fast': True, 'headless': True},
-    )
+    
+    grid_size = 5
+    twl_range = np.linspace(0.2, 1.5, grid_size)
+    amp_range = np.linspace(1.0, 4.0, grid_size)
+    parameter_grid = {
+        'twl': twl_range,
+        'amp': amp_range,
+    }
+##en commentaire pour pas relancer les 25 simulation !!!!!!!! 
+#    run_multiple(
+#        max_workers=MAX_WORKERS,
+#        controller=base_controller,
+#        base_path=BASE_PATH,
+#        parameter_grid=parameter_grid,
+#        common_kwargs={'fast': True, 'headless': True},
+#    )
 
     pylog.warning("TODO: 1.3 Analyze the results of multiple simulations")
+    
+    ##Getting the data from "get_matrics into grid" 
+    # Rows are amp, columns are TWL
+    fw_speed_grid = np.zeros((grid_size, grid_size))
+    CoT_grid = np.zeros((grid_size, grid_size))
+    average_IPL_grid = np.zeros((grid_size, grid_size))
 
+    for i, amp in enumerate(amp_range):
+        for j, twl in enumerate(twl_range):
+                speed, cot, ipl = get_metrics(twl=twl, amp=amp)
+                fw_speed_grid[i, j] = speed
+                CoT_grid[i, j] = cot
+                average_IPL_grid[i, j] = ipl
+                
+    ##PLots the 2D-grid parameter investigation 
+    
+    X, Y = np.meshgrid(twl_range, amp_range)
+    plt.figure(figsize=(12, 4))
+    
+    #Forward Speed
+    plt.subplot(1, 3, 1)
+    plt.pcolormesh(X, Y, fw_speed_grid) 
+    plt.colorbar(label='Forward Speed (m/s)')
+    plt.xlabel('Total Wave Lag (TWL)')
+    plt.ylabel('Amplitude (A)')
+    plt.title('Forward Speed')
+    plt.gca().set_box_aspect(1)
+    #CoT
+    plt.subplot(1, 3, 2)
+    plt.pcolormesh(X, Y, CoT_grid)
+    plt.colorbar(label='Cost of Transport (CoT)')
+    plt.xlabel('Total Wave Lag (TWL)')
+    plt.ylabel('Amplitude (A)')
+    plt.title('Cost of Transport')
+    plt.gca().set_box_aspect(1)
+    #IPL
+    plt.subplot(1, 3, 3)
+    plt.pcolormesh(X, Y, average_IPL_grid)
+    plt.colorbar(label='Phase Lag (rad)')
+    plt.xlabel('Total Wave Lag (TWL)')
+    plt.ylabel('Amplitude (A)')
+    plt.title('Intersegmental Phase Lag (IPL)')
+    plt.gca().set_box_aspect(1)
+    plt.tight_layout()
+    plt.savefig(os.path.join(PLOT_PATH, "Q_1_3_2D_grid_param_investigation")) 
+    
+    plt.show()
 
 if __name__ == '__main__':
     exercise1_2(plot=True)
