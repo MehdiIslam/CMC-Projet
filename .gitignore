@@ -21,3 +21,6 @@ cmc2026/
 cmc_env/
 venv_cmc/
 
+# logs
+
+Project1/Python/logs/
