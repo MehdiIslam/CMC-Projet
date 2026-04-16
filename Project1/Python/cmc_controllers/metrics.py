@@ -335,6 +335,29 @@ def compute_mechanical_energy_and_cot(times: np.ndarray,
     pylog.warning("TODO: 1.2 Compute energy and CoT")
     energy = np.inf
     cot = np.inf
+ 
+    t, j = joints_torques.shape[0], joints_torques.shape[1]
+    p = 0
+
+    for k in range(t):
+        for l in range(j):
+            p += max(joints_torques[k, l] * joints_velocities[k, l], 0)
+
+    dt = times[1] - times[0]
+   
+    energy = dt * p
+
+    com_x = (links_positions[:,:, 0] @ LINKS_MASSES)/TOTAL_MASS
+    com_y = (links_positions[:,:, 1] @ LINKS_MASSES)/TOTAL_MASS
+    com_z = (links_positions[:,:, 2] @ LINKS_MASSES)/TOTAL_MASS
+    com = np.array([com_x, com_y, com_z]).T
+    D_fwd = 0
+
+    for i in range(len(times) - 1):
+        D_fwd += np.linalg.norm(com[i + 1, :] - com[i, :])
+
+
+    cot = energy / D_fwd
 
     return energy, cot
 

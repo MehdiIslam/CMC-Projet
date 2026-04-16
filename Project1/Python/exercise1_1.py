@@ -51,7 +51,7 @@ def post_processing():
         times=sim_times, signals=neural_signals)
 
     # Metrics computation
-    pylog.warning("TODO: 1.1: Complete metrics implementation in metrics.py")
+    #pylog.warning("TODO: 1.1: Complete metrics implementation in metrics.py")
     freq, _, amp = compute_frequency_amplitude_fft(
         times=sim_times, smooth_signals=neural_signals_smoothed)
 
@@ -99,6 +99,11 @@ def post_processing():
         cot)
 
     pylog.warning("TODO: 1.2: Plot joint angles + CoM trajectory")
+    #plot_result = PLOT_PATH + 'Plot1_2.png'
+    #fig, ax = plt.subplot(1, 2)
+    #ax[0].plot()
+    #plt.savefig(plot_result)
+    print(sensor_data_joints_positions[:3, :])
 
 
 def main(**kwargs):
@@ -114,7 +119,7 @@ def main(**kwargs):
     runsim(
         controller=controller,
         base_path=BASE_PATH,
-        recording='exercise1_1.mp4',
+        recording=False#'exercise1_1.mp4',
     )
 
     post_processing()
