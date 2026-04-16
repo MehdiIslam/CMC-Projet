@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 import matplotlib
-## -------- a decommenter
-#matplotlib.use("Agg")
-#--------------------------------------------------------
+matplotlib.use("Agg")
+
 import os
 import pickle
 import h5py
@@ -53,12 +52,8 @@ def post_processing():
 
     # Metrics computation
     #pylog.warning("TODO: 1.1: Complete metrics implementation in metrics.py")
-<<<<<<< HEAD
-    freq, _, amp = compute_frequency_amplitude_fft(
-=======
     ##NM1
     freq, _, amp = compute_frequency_amplitude_fft( 
->>>>>>> main
         times=sim_times, smooth_signals=neural_signals_smoothed)
 
     inds_couples = [[i, i+1]
@@ -172,8 +167,8 @@ def exercise1_1(**kwargs):
             headless=kwargs.pop('headless', False),)
 
     plot = kwargs.pop('plot', False)
-    if plot:
-        plt.show()
+    #if plot:
+        #plt.show()
 
 
 if __name__ == '__main__':

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Run parameter sweeps for exercise 1.2 and plot metric heatmaps."""
+import matplotlib
+matplotlib.use("Agg")
 
 import os
 import pickle
@@ -114,21 +116,21 @@ def exercise1_2(**kwargs):
         'amp': example_amp_range,
     }
     
-    grid_size = 5
+    grid_size = 10
     twl_range = np.linspace(0.2, 1.5, grid_size)
     amp_range = np.linspace(1.0, 4.0, grid_size)
     parameter_grid = {
         'twl': twl_range,
         'amp': amp_range,
     }
-##en commentaire pour pas relancer les 25 simulation !!!!!!!! 
-#    run_multiple(
-#        max_workers=MAX_WORKERS,
-#        controller=base_controller,
-#        base_path=BASE_PATH,
-#        parameter_grid=parameter_grid,
-#        common_kwargs={'fast': True, 'headless': True},
-#    )
+
+    run_multiple(
+        max_workers=MAX_WORKERS,
+        controller=base_controller,
+        base_path=BASE_PATH,
+        parameter_grid=parameter_grid,
+        common_kwargs={'fast': True, 'headless': True},
+    )
 
     pylog.warning("TODO: 1.3 Analyze the results of multiple simulations")
     
@@ -177,7 +179,7 @@ def exercise1_2(**kwargs):
     plt.tight_layout()
     plt.savefig(os.path.join(PLOT_PATH, "Q_1_3_2D_grid_param_investigation")) 
     
-    plt.show()
+    #plt.show()
 
 if __name__ == '__main__':
     exercise1_2(plot=True)
