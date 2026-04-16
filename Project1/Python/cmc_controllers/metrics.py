@@ -117,11 +117,12 @@ def get_phase_lag(
     ''' Compute the phase lag between two signals in radians'''
 
     xcorr = np.correlate(sig2, sig1, "full")
-    n_lag = np.argmax(xcorr) - len(xcorr) // 2
+    n_lag = np.argmax(xcorr) - len(xcorr) // 2 #delay by the num of data samples n_lag
 
     phase_lag = 0
     #pylog.warning("TODO: 1.2")
     phase_lag = 2 * np.pi * sig_freq * n_lag
+    phase_lag =  2 * np.pi * sig_freq *n_lag * sig_dt #i think it more like this bc n_lag is just an index
     return phase_lag
 
 
@@ -254,12 +255,14 @@ def compute_mechanical_speed(links_positions: np.ndarray,
 
         #pylog.warning("TODO: 1.2 Compute the forward and lateral speed of CoM with")
         # projections on PCA direction
-        v_com_x = (links_vel_xy[:,:, 0] @ LINKS_MASSES)/TOTAL_MASS
-        v_com_y = (links_vel_xy[:,:, 1] @ LINKS_MASSES)/TOTAL_MASS
-        v_com = np.array([v_com_x, v_com_y]).T
+        v_com_x = (links_vel_xy[idx,:, 0] @ LINKS_MASSES)/TOTAL_MASS
+        v_com_y = (links_vel_xy[idx,:, 1] @ LINKS_MASSES)/TOTAL_MASS
+        v_com = np.array([v_com_x, v_com_y])
 
-        speed_forward = v_com @ direction_fwd
-        speed_lateral = v_com @ direction_left
+        speed_forward[idx] = np.dot(v_com, direction_fwd)
+        speed_lateral[idx] = np.dot(v_com, direction_left)
+        #speed_forward = v_com @ direction_fwd
+        #speed_lateral = v_com @ direction_left
 
     return np.mean(speed_forward), np.mean(speed_lateral)
 
@@ -332,9 +335,23 @@ def compute_mechanical_energy_and_cot(times: np.ndarray,
     Compute the integration of traveled distance for the CoM of the robot (useful varibles: LINKS_MASSES, TOTAL_MASS)
     """
 
-    pylog.warning("TODO: 1.2 Compute energy and CoT")
+    #pylog.warning("TODO: 1.2 Compute energy and CoT")
     energy = np.inf
     cot = np.inf
-
+    
+    dt = times[1] - times[0]
+    
+    power = joints_torques * joints_velocities  
+    positive_power = np.maximum(power,0)
+    energy = np.sum(positive_power) * dt #sum all the colum and then all the row
+    
+    ##determine the CoM 
+    com_x = (links_positions[:, :, 0] @ LINKS_MASSES) / TOTAL_MASS
+    com_y = (links_positions[:, :, 1] @ LINKS_MASSES) / TOTAL_MASS
+    com_pos = np.array([com_x, com_y]).T
+    
+    D_fwd = np.linalg.norm(com_pos[-1]-com_pos[0])
+    if D_fwd != 0:
+        cot = energy / D_fwd
     return energy, cot
 
