@@ -14,8 +14,13 @@ __pycache__/
 
 # Mac
 .DS_Store
+**/.DS_Store
 
 # env
 cmc2026/
 cmc_env/
 venv_cmc/
+
+# logs
+
+Project1/Python/logs/
