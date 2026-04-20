@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+import matplotlib
+matplotlib.use("Agg")
+
 import time
 import os
 import pickle
@@ -33,6 +36,44 @@ def post_processing(base_path):
     with open(base_path + "controller.pkl", "rb") as f:
         controller_data = pickle.load(f)
 
+    real_joint_names = [
+        "Joint 0", "Joint 1", "Joint 2", "Joint 3", 
+        "Joint 4", "Joint 6", "Joint 7", "Joint 8"
+    ]
+    
+    plt.figure(1)
+    for i in range(8):
+        plt.plot(sim_times, sensor_data_joints_positions[:, i], label=real_joint_names[i])
+        
+    plt.title("Time Evolution of Spine Joint Angles")
+    plt.xlabel("Time (s)")
+    plt.ylabel("Joint Angle (rad)")
+
+    plt.xlim([0, 5]) ## just the first 4 sec
+    plt.grid(True)
+    plt.legend(loc="best", fontsize="small", ncol=2)
+
+    
+    from cmc_controllers.metrics import LINKS_MASSES,TOTAL_MASS 
+    com_x = (sensor_data_links_positions[:, :, 0] @ LINKS_MASSES) / TOTAL_MASS
+    com_y = (sensor_data_links_positions[:, :, 1] @ LINKS_MASSES) / TOTAL_MASS
+
+    plt.figure(0)
+    plt.plot(com_x, com_y, label="CoM Trajectory", color="blue")
+    
+    plt.scatter(com_x[0], com_y[0], color='green', marker='o', s=50, label='Start')
+    plt.scatter(com_x[-1], com_y[-1], color='red', marker='X', s=50, label='End')
+
+    plt.title("Robot CoM Trajectory in 2D")
+    plt.xlabel("X Position (m)")
+    plt.ylabel("Y Position (m)")
+    plt.axis('equal')
+    plt.grid(True)
+    plt.legend()
+
+    plt.figure(0).savefig("results/Q_2_1_com_trajectory.png")
+    plt.figure(1).savefig("results/Q_2_1_joint_angle.png")
+
 
 def main(**kwargs):
     """Run exercise 2.1 simulation and post-processing pipeline."""
@@ -63,7 +104,7 @@ def main(**kwargs):
     runsim(
         controller=controller,
         base_path=BASE_PATH,
-        recording='exercise2_1.mp4',
+        recording=False#'exercise2_1.mp4',
     )
     post_processing(BASE_PATH)
     pylog.info('Total simulation time: %s [s]', time.time() - tic)
@@ -75,8 +116,8 @@ def exercise2_1(**kwargs):
             fast=kwargs.pop('fast', False),
             headless=kwargs.pop('headless', False),)
     plot = kwargs.pop('plot', False)
-    if plot:
-        plt.show()
+    #if plot:
+    #    plt.show()
 
 
 if __name__ == '__main__':

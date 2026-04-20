@@ -154,7 +154,7 @@ def main(**kwargs):
     runsim(
         controller=controller,
         base_path=BASE_PATH,
-        recording=False#'exercise1_1.mp4',
+        recording='exercise1_1.mp4',
     )
 
     post_processing()

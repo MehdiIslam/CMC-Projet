@@ -104,7 +104,7 @@ def exercise1_2(**kwargs):
             'freq': 1.5,
             'twl': 1.0,
             'amp': 1.0}}
-    pylog.warning("TODO: 1.2 Adapt the parameter space according to needs.")
+    #pylog.warning("TODO: 1.2 Adapt the parameter space according to needs.")
     # Hint: You don't need to test all combinations of parameters with complexity of O(n^3)
     # You can replace range with list of length 1 to keep some parameters fixed
     # while testing others O(n^2) or O(n)
@@ -132,7 +132,7 @@ def exercise1_2(**kwargs):
         common_kwargs={'fast': True, 'headless': True},
     )
 
-    pylog.warning("TODO: 1.3 Analyze the results of multiple simulations")
+    #pylog.warning("TODO: 1.3 Analyze the results of multiple simulations")
     
     ##Getting the data from "get_matrics into grid" 
     # Rows are amp, columns are TWL
