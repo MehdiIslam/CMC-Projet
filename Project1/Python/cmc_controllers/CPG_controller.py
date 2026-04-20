@@ -190,7 +190,7 @@ class CPGNetwork(NeuralNetwork):
             self.data.sensors.joints.array[iteration-1, :self.n_body_joints, 0]) if iteration > 0 else np.zeros(self.n_body_joints)
 
         pylog.warning("TODO 3.1 Stretch feedback")
-        
+    
         pylog.warning("TODO 3.3 Disruption to sensors")
 
         pylog.warning("TODO 3.3 Set ODE parameters with stretch value")
