@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Run exercise 2.2 parameter sweeps and generate heatmaps/trajectory plots."""
 
+import matplotlib
+matplotlib.use("Agg")
+
 import os
 import h5py
 import numpy as np
@@ -60,8 +63,8 @@ def exercise2_2(**kwargs):
     # pylog.set_level('critical')
 
     plot = kwargs.pop('plot', False)
-    if plot:
-        plt.show()
+    #if plot:
+        #plt.show()
 
 
 if __name__ == '__main__':

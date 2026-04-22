@@ -142,7 +142,7 @@ def post_processing(base_path):
         
     plt.title("Time Evolution of amplitudes")
     plt.xlabel("Time (s)")
-    plt.ylabel("Amplitude (unit?)")
+    plt.ylabel("Amplitude (rad)")
 
     plt.xlim([0, 5]) 
     plt.grid(True)
