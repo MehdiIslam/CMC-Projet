@@ -100,7 +100,7 @@ def post_processing():
         '\nCoT: ',
         cot)
 
-    pylog.warning("TODO: 1.2: Plot joint angles + CoM trajectory")
+    #pylog.warning("TODO: 1.2: Plot joint angles + CoM trajectory")
     from cmc_controllers.metrics import LINKS_MASSES,TOTAL_MASS 
     
     ## Joint angles
@@ -116,17 +116,16 @@ def post_processing():
     plt.xlabel("Time (s)")
     plt.ylabel("Joint Angle (rad)")
 
-    plt.xlim([0, 4]) ## just the first 4 sec
+    plt.xlim([0, 2]) 
     plt.grid(True)
     plt.legend(loc="best", fontsize="small", ncol=2)
+    
     ##CoM 
-
     com_x = (sensor_data_links_positions[:, :, 0] @ LINKS_MASSES) / TOTAL_MASS
     com_y = (sensor_data_links_positions[:, :, 1] @ LINKS_MASSES) / TOTAL_MASS
 
     plt.figure(2)
-    plt.plot(com_x, com_y, label="CoM Trajectory", color="blue")
-    
+    plt.plot(com_x, com_y, label="CoM Trajectory", color="blue")    
     plt.scatter(com_x[0], com_y[0], color='green', marker='o', s=50, label='Start')
     plt.scatter(com_x[-1], com_y[-1], color='red', marker='X', s=50, label='End')
     

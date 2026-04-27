@@ -160,8 +160,6 @@ def compute_neural_phase_lags(
 
 # MM1
 # Mechanical Amplitude and Frequency
-
-
 def compute_mechanical_frequency_amplitude_fft(
         times: np.ndarray,
         signals: np.ndarray):

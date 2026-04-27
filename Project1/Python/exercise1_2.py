@@ -123,7 +123,8 @@ def exercise1_2(**kwargs):
         'twl': twl_range,
         'amp': amp_range,
     }
-
+    ###-----UNCOMMENT TO RUN THE SIMU
+    """
     run_multiple(
         max_workers=MAX_WORKERS,
         controller=base_controller,
@@ -131,11 +132,10 @@ def exercise1_2(**kwargs):
         parameter_grid=parameter_grid,
         common_kwargs={'fast': True, 'headless': True},
     )
+    """
+    #pylog.warning("TODO: 1.3 Analyze the results of multiple simulations")
+    print("Extracting data and generating plots...")
 
-    pylog.warning("TODO: 1.3 Analyze the results of multiple simulations")
-    
-    ##Getting the data from "get_matrics into grid" 
-    # Rows are amp, columns are TWL
     fw_speed_grid = np.zeros((grid_size, grid_size))
     CoT_grid = np.zeros((grid_size, grid_size))
     average_IPL_grid = np.zeros((grid_size, grid_size))
@@ -156,6 +156,12 @@ def exercise1_2(**kwargs):
     plt.subplot(1, 3, 1)
     plt.pcolormesh(X, Y, fw_speed_grid) 
     plt.colorbar(label='Forward Speed (m/s)')
+    # Add text to each square
+    for i in range(grid_size):
+        for j in range(grid_size):
+            if not np.isnan(fw_speed_grid[i, j]):
+                plt.text(twl_range[j], amp_range[i], f'{fw_speed_grid[i, j]:.2f}', 
+                         ha='center', va='center', color='white', fontsize=7)
     plt.xlabel('Total Wave Lag (TWL)')
     plt.ylabel('Amplitude (A)')
     plt.title('Forward Speed')
@@ -164,6 +170,12 @@ def exercise1_2(**kwargs):
     plt.subplot(1, 3, 2)
     plt.pcolormesh(X, Y, CoT_grid)
     plt.colorbar(label='Cost of Transport (CoT)')
+    # Add text to each square
+    for i in range(grid_size):
+        for j in range(grid_size):
+            if not np.isnan(CoT_grid[i, j]):
+                plt.text(twl_range[j], amp_range[i], f'{CoT_grid[i, j]:.2f}', 
+                         ha='center', va='center', color='white', fontsize=7)
     plt.xlabel('Total Wave Lag (TWL)')
     plt.ylabel('Amplitude (A)')
     plt.title('Cost of Transport')
@@ -172,6 +184,12 @@ def exercise1_2(**kwargs):
     plt.subplot(1, 3, 3)
     plt.pcolormesh(X, Y, average_IPL_grid)
     plt.colorbar(label='Phase Lag (rad)')
+    # Add text to each square
+    for i in range(grid_size):
+        for j in range(grid_size):
+            if not np.isnan(average_IPL_grid[i, j]):
+                plt.text(twl_range[j], amp_range[i], f'{average_IPL_grid[i, j]:.2f}', 
+                         ha='center', va='center', color='white', fontsize=7)
     plt.xlabel('Total Wave Lag (TWL)')
     plt.ylabel('Amplitude (A)')
     plt.title('Intersegmental Phase Lag (IPL)')

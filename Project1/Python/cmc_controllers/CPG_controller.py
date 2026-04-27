@@ -74,29 +74,70 @@ class CPGNetwork(NeuralNetwork):
         self.coupling_weights_caudal = coupling_weights_caudal
         self.coupling_weights_contra = coupling_weights_contra
 
-        pylog.warning("TODO 3.1 stretch feedback")
+        ###pylog.warning("TODO 3.1 stretch feedback")
         self.w_ipsi = kwargs.pop('w_ipsi', None)
 
-        pylog.warning("TODO 3.3 Disruption masks")
+        ###pylog.warning("TODO 3.3 Disruption masks")
         self.disruption_p_sensors = kwargs.pop('disruption_p_sensors', 0.0)
         self.disruption_p_couplings = kwargs.pop('disruption_p_couplings', 0.0)
         self.random_seed = kwargs.pop('random_seed', 42)
         np.random.seed(self.random_seed)
 
         # CPG controller parameters
+        ##2.1 nominal_amplitudes
         self.nominal_amplitudes = np.zeros(self.n_oscillators)
+        ##2.1 nominal_freq
         self.nominal_frequencies = np.zeros(self.n_oscillators)
-        self.coupling_weights = np.zeros(
-            (self.n_oscillators, self.n_oscillators))
+        ##2.1 coupling weight
+        self.coupling_weights = np.zeros((self.n_oscillators, self.n_oscillators))
+        ##2.1 pahses bias
         self.phase_bias = np.zeros((self.n_oscillators, self.n_oscillators))
-
+           
         # drive (constant in project 1)
         self.drive_left = drive_left
         self.drive_right = drive_right
 
+        for j in range(self.left_body_idx.start, self.left_body_idx.stop, self.left_body_idx.step):
+            if drive_left < d_low or drive_left > d_high:
+                self.nominal_amplitudes[j] = 0
+                self.nominal_frequencies[j] = 0
+            else:
+                self.nominal_amplitudes[j] = G_amp[j//2] * (drive_left - d_low) + offset_amp[j//2]
+                self.nominal_frequencies[j] = G_freq[j//2] * (drive_left - d_low) + offset_freq[j//2]
+
+        for j in range(self.right_body_idx.start, self.right_body_idx.stop, self.right_body_idx.step):
+            if drive_right < d_low or drive_right > d_high:
+                self.nominal_amplitudes[j] = 0
+                self.nominal_frequencies[j] = 0
+            else:
+                self.nominal_amplitudes[j] = G_amp[j//2] * (drive_right - d_low) + offset_amp[j//2]
+                self.nominal_frequencies[j] = G_freq[j//2] * (drive_right - d_low) + offset_freq[j//2]
+
+        for i in range(self.n_oscillators):
+            for j in range(self.n_oscillators):
+                if i - j == 2 or j - i == 2:
+                    if i < j:
+                        self.coupling_weights[i, j] = coupling_weights_caudal
+                        self.phase_bias[i, j] = -PL[i//2]
+                    elif i > j:
+                        self.coupling_weights[i, j] = coupling_weights_rostral
+                        self.phase_bias[i, j] = PL[j//2]
+                elif (i - j == 1 or j - i == 1) and (i + j + 1) % 4 != 0:
+                    self.coupling_weights[i, j] = coupling_weights_contra
+                    if i < j:
+                        self.phase_bias[i, j] = np.pi
+                    elif i > j:
+                        self.phase_bias[i, j] = -np.pi
+                else:
+                    self.coupling_weights[i, j] =0
+                    self.phase_bias[i, j] = 0
+        
     def motor_output(self, phase, amplitude):
-        pylog.warning("TODO 2.1 CPG motor output implementation")
+        #pylog.warning("TODO 2.1 CPG motor output implementation")
         oscillator_output = np.zeros_like(phase)
+
+        oscillator_output = amplitude * (1 + np.cos(phase))
+    
         return np.array(oscillator_output[self.left_body_idx]), np.array(
             oscillator_output[self.right_body_idx])
 
@@ -112,9 +153,17 @@ class CPGNetwork(NeuralNetwork):
 
         dstates = np.zeros_like(state)
 
-        pylog.warning("TODO 2.1 CPG ODE implementation")
+        #pylog.warning("TODO 2.1 CPG ODE implementation")
+        phases_sum = 0
+        for j in range(self.n_oscillators):
+            phases_sum += amplitudes[j] * self.coupling_weights[:, j] * np.sin(phases[j] - phases - self.phase_bias[:,j])
 
-        pylog.warning("TODO 3.1 Stretch feedback")
+        dstates[:self.n_oscillators] =  2 * np.pi * self.nominal_frequencies + phases_sum
+
+        for i in range(self.n_oscillators):
+            dstates[self.n_oscillators+i] = self.a_rate[i//2] * (self.nominal_amplitudes[i] - amplitudes[i])
+        
+        ###pylog.warning("TODO 3.1 Stretch feedback")
 
         if self.w_ipsi is not None:
             pass
@@ -142,12 +191,12 @@ class CPGNetwork(NeuralNetwork):
         stretch_value = np.array(
             self.data.sensors.joints.array[iteration-1, :self.n_body_joints, 0]) if iteration > 0 else np.zeros(self.n_body_joints)
 
-        pylog.warning("TODO 3.1 Stretch feedback")
+        ###pylog.warning("TODO 3.1 Stretch feedback")
 
-        pylog.warning("TODO 3.3 Disruption to sensors")
+        ###pylog.warning("TODO 3.3 Disruption to sensors")
 
-        pylog.warning("TODO 3.3 Set ODE parameters with stretch value")
-        # self.solver.set_f_params(np.zeros(self.n_oscillators))
+        ###pylog.warning("TODO 3.3 Set ODE parameters with stretch value")
+        self.solver.set_f_params(stretch_value)
 
         # Integrate ODE using dopri5 solver
         self.solver.integrate(time + timestep)
