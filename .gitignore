@@ -22,4 +22,5 @@ cmc_env/
 venv_cmc/
 
 # logs
-
+Project1/Python/logs
+Project1/Python/results 
